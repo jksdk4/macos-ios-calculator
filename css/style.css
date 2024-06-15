@@ -26,8 +26,10 @@ body {
 .calculator {
   flex: 1;
   min-width: 195px;
+}
+
+.basic, .calculator .keys {
   max-width: 340px;
-  border-radius: 20px;
 }
 
 .display {
