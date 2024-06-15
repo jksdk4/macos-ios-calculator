@@ -1,16 +1,48 @@
-let display = document.getElementById("display");
-let numberKeys = document.getElementsByClassName("num");
-let operators = document.getElementsByClassName("operator");
-let clearKey = document.getElementById("clear");
-let curNumber = 0,
-  prevNumber = 0,
-  afterOperation = false,
-  curOperation = undefined;
+const result = document.getElementById("result");
+const numberKeys = document.getElementsByClassName("num");
+const operators = document.getElementsByClassName("operator");
+const clearKey = document.getElementById("clear");
+let curNumber = 0;
+let prevNumber = 0;
+let afterOperation = false;
+let curOperation = undefined;
 
-// add listeners to number numberKeys
+const body = document.body;
+let bodyCompStyle = window.getComputedStyle(body, null).getPropertyValue("font-size");
+let resultFontSize = parseFloat(bodyCompStyle);
+let updatedResultFontSize = resultFontSize;
+
+function changeDisplayVal(numString) {
+  if (result.innerHTML === '0' || afterOperation) {
+    result.innerHTML = '';
+    afterOperation = false;
+  }
+  // prevent having more than one decimal point
+  if (numString === '.' && result.innerHTML.indexOf('.') > -1) {
+    numString = '';
+  }
+
+  let resultLen = result.innerHTML.length + 1;
+
+  // prevent input of more than 16
+  if (resultLen < 17) {
+    result.innerHTML += numString;
+  }
+
+  curNumber = Number(result.innerHTML);
+
+  // TODO: adjust so it only does this if the container width is under i dunno 200px?
+  if (resultLen >= 9 && resultLen < 17) {
+    // decrease result text size up to length 16
+    body.style.fontSize = (updatedResultFontSize - 1.5) + "px";
+    updatedResultFontSize -= 1.5;
+  }
+}
+
 for (let i = 0; i < numberKeys.length; i++) {
   numberKeys[i].addEventListener("click", () => {
     changeDisplayVal(numberKeys[i].innerHTML);
+    clearKey.innerHTML = 'C';
   });
 }
 
@@ -27,6 +59,9 @@ for (let i = 0; i < operators.length; i++) {
 
 clearKey.addEventListener("click", () => {
   clearAll();
+  clearKey.innerHTML = 'AC';
+  body.style.fontSize = resultFontSize + "px";
+  updatedResultFontSize = resultFontSize;
 });
 
 function doOperation(operation) {
@@ -49,26 +84,7 @@ function clearAll() {
   prevNumber = 0;
   curOperation = undefined;
   afterOperation = false;
-  display.innerHTML = '0';
-}
-
-function changeDisplayVal(numString) {
-  if (display.innerHTML === '0' || afterOperation) {
-    display.innerHTML = '';
-    afterOperation = false;
-  }
-  // fix having more than one decimal point
-  if (numString === '.' && display.innerHTML.indexOf('.') > -1) {
-    numString = '';
-  }
-  if (display.innerHTML.length >= 16) {
-    // do nothing (16 digit limit)
-  } else {
-    display.innerHTML += numString;
-  }
-
-  // set current number
-  curNumber = Number(display.innerHTML);
+  result.innerHTML = '0';
 }
 
 function evaluate(operation) {
@@ -90,7 +106,7 @@ function evaluate(operation) {
     if (curNumber.toString().length >= 16) {
       curNumber = Number(curNumber.toFixed(16));
     }
-    display.innerHTML = curNumber;
+    result.innerHTML = curNumber;
   }
   afterOperation = true;
   curOperation = undefined;
