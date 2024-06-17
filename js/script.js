@@ -1,20 +1,29 @@
 const result = document.getElementById("result");
 const numberKeys = document.getElementsByClassName("num");
 const operators = document.getElementsByClassName("operator");
+const functions = document.querySelectorAll(".function:not(#clear)");
+const operatorsWithoutEqual = document.querySelectorAll(".operator:not(#equals)");
+
 const clearKey = document.getElementById("clear");
 let curNumber = 0;
 let prevNumber = 0;
 let afterOperation = false;
 let curOperation = undefined;
 
-const body = document.body;
-let bodyCompStyle = window.getComputedStyle(body, null).getPropertyValue("font-size");
-let resultFontSize = parseFloat(bodyCompStyle);
+const bodyCompStyle = window.getComputedStyle(document.body, null).getPropertyValue("font-size");
+const resultFontSize = parseFloat(bodyCompStyle);
 let updatedResultFontSize = resultFontSize;
+
+function resetDisplayTextSize() {
+  document.body.style.fontSize = resultFontSize + "px";
+  updatedResultFontSize = resultFontSize;
+}
 
 function changeDisplayVal(numString) {
   if (result.innerHTML === '0' || afterOperation) {
-    result.innerHTML = '';
+    resetDisplayTextSize();   // resets input size after hitting an operand and upon the second input being entered
+
+    result.innerHTML = '';    // TODO: hmm i dunno about making it an empty string. but maybe it's fine
     afterOperation = false;
   }
   // prevent having more than one decimal point
@@ -23,8 +32,6 @@ function changeDisplayVal(numString) {
   }
 
   let resultLen = result.innerHTML.length + 1;
-
-  // prevent input of more than 16
   if (resultLen < 17) {
     result.innerHTML += numString;
   }
@@ -33,16 +40,22 @@ function changeDisplayVal(numString) {
 
   // TODO: adjust so it only does this if the container width is under i dunno 200px?
   if (resultLen >= 9 && resultLen < 17) {
-    // decrease result text size up to length 16
-    body.style.fontSize = (updatedResultFontSize - 1.5) + "px";
+    document.body.style.fontSize = (updatedResultFontSize - 1.5) + "px";
     updatedResultFontSize -= 1.5;
   }
 }
 
 for (let i = 0; i < numberKeys.length; i++) {
   numberKeys[i].addEventListener("click", () => {
-    changeDisplayVal(numberKeys[i].innerHTML);
     clearKey.innerHTML = 'C';
+    changeDisplayVal(numberKeys[i].innerHTML);
+  });
+}
+
+// executing unary functions like negation
+for (let i = 0; i < functions.length; i++) {
+  functions[i].addEventListener("click", () => {
+    evaluate(functions[i]);
   });
 }
 
@@ -51,17 +64,16 @@ for (let i = 0; i < operators.length; i++) {
     if (operators[i].classList.contains("equals")) {
       evaluate(curOperation);
     } else {
-      const operation = operators[i].id;
-      doOperation(operation);
+      doOperation(operators[i]);
     }
   });
 }
 
 clearKey.addEventListener("click", () => {
   clearAll();
+  enableButtons();
   clearKey.innerHTML = 'AC';
-  body.style.fontSize = resultFontSize + "px";
-  updatedResultFontSize = resultFontSize;
+  resetDisplayTextSize();
 });
 
 function doOperation(operation) {
@@ -87,7 +99,66 @@ function clearAll() {
   result.innerHTML = '0';
 }
 
-function evaluate(operation) {
+function factorial(num) {
+  if (num < 0) {
+    disableButtons();
+    result.innerHTML = "Not a number";
+    return NaN;
+  }
+
+  if (num === 0 || num === 1) return 1;
+
+  let returnVal = 1;
+  for (let i = 2; i <= num; i++)
+    returnVal *= i;
+  return returnVal;
+}
+
+function disableButtons() {
+  for (let i = 0; i < operatorsWithoutEqual.length; i++) {
+    operatorsWithoutEqual[i].setAttribute("disabled", "");
+  }
+
+  for (let i = 0; i < functions.length; i++) {
+    functions[i].setAttribute("disabled", "");
+  }
+
+  document.getElementById("decimal").setAttribute("disabled", "");
+}
+
+// TODO: allow input to have more than one digit when clicking num button.
+function enableButtons() {
+  afterOperation = true;
+
+  for (let i = 0; i < operatorsWithoutEqual.length; i++) {
+    if (operatorsWithoutEqual[i].hasAttribute("disabled")) {
+      operatorsWithoutEqual[i].removeAttribute("disabled");
+    }
+  }
+
+  for (let i = 0; i < functions.length; i++) {
+    if (functions[i].hasAttribute("disabled")) {
+      functions[i].removeAttribute("disabled");
+    }
+  }
+
+  document.getElementById("decimal").removeAttribute("disabled");
+}
+
+function checkForUndefined(res) {
+  if (res === NaN) {
+    result.innerHTML = "Not a number";
+    disableButtons();
+  }
+}
+
+/* 
+  TODO: mostly works, but doesn't apply unary function to result after I hit equals.
+  check the doOperation method. may need to refactor this function.
+*/
+
+function evaluate(operationBtn) {
+  const operation = operationBtn.id;
   if (!afterOperation) {
     switch (operation) {
       case 'add':
@@ -101,13 +172,70 @@ function evaluate(operation) {
         break;
       case 'divide':
         curNumber = prevNumber / curNumber;
+        // NaN won't go away and buttons won't disable if I do 0/0. hmmm. these work though.
+        if (curNumber === Infinity || curNumber === -Infinity) {
+          result.innerHTML = "Cannot divide by zero";
+          disableButtons();
+        }
+        break;
+      case 'percent':
+        curNumber /= 100;
+        break;
+      case 'invert':
+        curNumber === 0 ? curNumber : curNumber = -curNumber;
+        break;
+      case 'square-root':
+        curNumber = Math.sqrt(curNumber);
+        checkForUndefined(curNumber);
+        break;
+      case 'cube-root':
+        curNumber = Math.cbrt(curNumber);
+        checkForUndefined(curNumber);
+        break;
+      case 'pi':
+        curNumber = Math.PI;
+        break;
+      case 'e':
+        curNumber = Math.E;
+        break;
+      case 'abs':
+        curNumber = Math.abs(curNumber);
+        break;
+      case 'factorial':
+        curNumber = factorial(curNumber);
+        break;
+      case 'sine':
+        curNumber = Math.sin(curNumber);
+        break;
+      case 'cosine':
+        curNumber = Math.cos(curNumber);
+        break;
+      case 'tangent':
+        curNumber = Math.tan(curNumber);
+        break;
+      case 'arcsin':
+        curNumber = Math.asin(curNumber);
+        break;
+      case 'arccos':
+        curNumber = Math.acos(curNumber);
+        break;
+      case 'arctan':
+        curNumber = Math.atan(curNumber);
         break;
     }
-    if (curNumber.toString().length >= 16) {
-      curNumber = Number(curNumber.toFixed(16));
+
+    // prevent overriding result.innerHTML and causing toString error if result is not a regular number
+    if (typeof curNumber == "number" && curNumber !== Infinity && curNumber !== -Infinity && curNumber !== NaN) {
+      if (curNumber.toString().length >= 16) {
+        curNumber = Number(curNumber.toFixed(16));
+      }
+
+      result.innerHTML = curNumber;
     }
-    result.innerHTML = curNumber;
   }
-  afterOperation = true;
-  curOperation = undefined;
+
+  if (operationBtn.classList.contains("operator")) {
+    afterOperation = true;
+    curOperation = undefined;
+  }
 }

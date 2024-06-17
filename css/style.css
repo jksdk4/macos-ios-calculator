@@ -38,8 +38,7 @@ body {
   align-items: center;
   background-color: rgba(66, 68, 72, 0.55);
   min-height: 60px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 0 5px;
 }
 
 .result {
@@ -75,14 +74,27 @@ button {
 button:hover {
   background-color: cadetblue;
 }
+button:disabled {
+  cursor: not-allowed;
+  color: rgba(240, 248, 255, 0.75);
+}
+button:disabled, button:disabled:hover {
+  background-color: #434343;
+}
 button.function {
   background-color: #424448;
 }
 button.function:hover {
   background-color: darkgray;
 }
+button.function:disabled, button.function:disabled:hover {
+  background-color: #2e3032;
+}
 button.operator {
   background-color: #fe9f09;
+}
+button.operator:disabled, button.operator:disabled:hover {
+  background-color: #985f05;
 }
 button.operator:hover {
   background-color: #fe6b09;

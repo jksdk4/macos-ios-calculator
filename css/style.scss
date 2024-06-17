@@ -1,9 +1,12 @@
 $bg: #26547c;
 $num-button: #606060;
+$num-button--disabled: #434343;
 $num-button--hover: cadetblue;
 $function-button: #424448;
+$function-button--disabled: #2e3032;
 $function-button--hover: darkgray;
 $operator-button: #fe9f09;
+$operator-button--disabled: #985f05;
 $operator-button--hover: #fe6b09;
 $radius: 10px;
 $font: 'Arial', sans-serif;
@@ -49,8 +52,7 @@ body {
   align-items: center;
   background-color: rgba(66, 68, 72, .55);
   min-height: 60px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 0 5px;
 }
 
 .result {
@@ -86,6 +88,15 @@ button {
   &:hover {
     background-color: $num-button--hover;
   }
+  
+  &:disabled {
+    cursor: not-allowed;
+    color: rgba(240, 248, 255, 0.75);
+  }
+
+  &:disabled, &:disabled:hover {
+    background-color: $num-button--disabled;
+  }
 
   &.function {
     background-color: $function-button;
@@ -93,10 +104,18 @@ button {
     &:hover {
       background-color: $function-button--hover;
     }
+
+    &:disabled, &:disabled:hover {
+      background-color: $function-button--disabled;
+    }
   }
 
   &.operator {
     background-color: $operator-button;
+
+    &:disabled, &:disabled:hover {
+      background-color: $operator-button--disabled;
+    }
 
     &:hover {
       background-color: $operator-button--hover;
