@@ -45,37 +45,6 @@ function changeDisplayVal(numString) {
   }
 }
 
-for (let i = 0; i < numberKeys.length; i++) {
-  numberKeys[i].addEventListener("click", () => {
-    clearKey.innerHTML = 'C';
-    changeDisplayVal(numberKeys[i].innerHTML);
-  });
-}
-
-// executing unary functions like negation
-for (let i = 0; i < functions.length; i++) {
-  functions[i].addEventListener("click", () => {
-    evaluate(functions[i]);
-  });
-}
-
-for (let i = 0; i < operators.length; i++) {
-  operators[i].addEventListener("click", () => {
-    if (operators[i].classList.contains("equals")) {
-      evaluate(curOperation);
-    } else {
-      doOperation(operators[i]);
-    }
-  });
-}
-
-clearKey.addEventListener("click", () => {
-  clearAll();
-  enableButtons();
-  clearKey.innerHTML = 'AC';
-  resetDisplayTextSize();
-});
-
 function doOperation(operation) {
   if (!curOperation) {
     prevNumber = curNumber;
@@ -146,10 +115,12 @@ function enableButtons() {
 }
 
 function checkForUndefined(res) {
-  if (res === NaN) {
+  if (isNaN(res) || res === Infinity || res === -Infinity) {
     result.innerHTML = "Not a number";
     disableButtons();
+    return true;
   }
+  return false;
 }
 
 /* 
@@ -172,11 +143,6 @@ function evaluate(operationBtn) {
         break;
       case 'divide':
         curNumber = prevNumber / curNumber;
-        // NaN won't go away and buttons won't disable if I do 0/0. hmmm. these work though.
-        if (curNumber === Infinity || curNumber === -Infinity) {
-          result.innerHTML = "Cannot divide by zero";
-          disableButtons();
-        }
         break;
       case 'percent':
         curNumber /= 100;
@@ -186,11 +152,9 @@ function evaluate(operationBtn) {
         break;
       case 'square-root':
         curNumber = Math.sqrt(curNumber);
-        checkForUndefined(curNumber);
         break;
       case 'cube-root':
         curNumber = Math.cbrt(curNumber);
-        checkForUndefined(curNumber);
         break;
       case 'pi':
         curNumber = Math.PI;
@@ -225,17 +189,47 @@ function evaluate(operationBtn) {
     }
 
     // prevent overriding result.innerHTML and causing toString error if result is not a regular number
-    if (typeof curNumber == "number" && curNumber !== Infinity && curNumber !== -Infinity && curNumber !== NaN) {
+    if (!checkForUndefined(curNumber)) {
       if (curNumber.toString().length >= 16) {
         curNumber = Number(curNumber.toFixed(16));
       }
-
       result.innerHTML = curNumber;
     }
   }
 
+  afterOperation = true;
   if (operationBtn.classList.contains("operator")) {
-    afterOperation = true;
     curOperation = undefined;
   }
 }
+
+for (let i = 0; i < numberKeys.length; i++) {
+  numberKeys[i].addEventListener("click", () => {
+    clearKey.innerHTML = 'C';
+    changeDisplayVal(numberKeys[i].innerHTML);
+  });
+}
+
+// executing unary functions like negation
+for (let i = 0; i < functions.length; i++) {
+  functions[i].addEventListener("click", () => {
+    evaluate(functions[i]);
+  });
+}
+
+for (let i = 0; i < operators.length; i++) {
+  operators[i].addEventListener("click", () => {
+    if (operators[i].classList.contains("equals")) {
+      evaluate(curOperation);
+    } else {
+      doOperation(operators[i]);
+    }
+  });
+}
+
+clearKey.addEventListener("click", () => {
+  clearAll();
+  enableButtons();
+  clearKey.innerHTML = 'AC';
+  resetDisplayTextSize();
+});
