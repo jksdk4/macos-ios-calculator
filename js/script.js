@@ -70,8 +70,6 @@ function clearAll() {
 
 function factorial(num) {
   if (num < 0) {
-    disableButtons();
-    result.innerHTML = "Not a number";
     return NaN;
   }
 
@@ -124,7 +122,8 @@ function checkForUndefined(res) {
 }
 
 /* 
-  TODO: mostly works, but doesn't apply unary function to result after I hit equals.
+  TODO: mostly works, but doesn't apply unary function to result.
+  so this prevents applying a func to a result. but it does allow to stack them beforehand.
   check the doOperation method. may need to refactor this function.
 */
 
@@ -214,6 +213,7 @@ for (let i = 0; i < numberKeys.length; i++) {
 for (let i = 0; i < functions.length; i++) {
   functions[i].addEventListener("click", () => {
     evaluate(functions[i]);
+    afterOperation = false;   // allows second unary input after operand and execute result correctly
   });
 }
 
