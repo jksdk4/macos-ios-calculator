@@ -93,7 +93,7 @@ function disableButtons() {
   document.getElementById("decimal").setAttribute("disabled", "");
 }
 
-// TODO: allow input to have more than one digit when clicking num button.
+// TODO: allow input to have more than one digit when clicking num button to restore.
 function enableButtons() {
   afterOperation = true;
 
@@ -185,9 +185,17 @@ function evaluate(operationBtn) {
       case 'arctan':
         curNumber = Math.atan(curNumber);
         break;
+      case 'random':
+        curNumber = Math.random();
+        break;
+      case 'ten-to-x':
+        curNumber = Math.pow(10, curNumber);
+        break;
+      case 'exponent':
+        curNumber = Math.pow(prevNumber, curNumber);  // 👀
+        break;
     }
 
-    // prevent overriding result.innerHTML and causing toString error if result is not a regular number
     if (!checkForUndefined(curNumber)) {
       if (curNumber.toString().length >= 16) {
         curNumber = Number(curNumber.toFixed(16));
@@ -211,9 +219,14 @@ for (let i = 0; i < numberKeys.length; i++) {
 
 // executing unary functions like negation
 for (let i = 0; i < functions.length; i++) {
+  if (functions[i].classList.contains("operator")) continue;    // skip sci calc binary functions like x^y
   functions[i].addEventListener("click", () => {
-    evaluate(functions[i]);
-    afterOperation = false;   // allows second unary input after operand and execute result correctly
+    if (functions[i].classList.contains("toggle")) {
+      toggle(functions[i]);   // i'll add this function later. for 2nd, rad/deg.
+    } else {
+      evaluate(functions[i]);
+      afterOperation = false;   // allows second unary input after operator use
+    }
   });
 }
 
