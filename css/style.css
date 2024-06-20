@@ -2,7 +2,7 @@ body, html {
   height: 100%;
   background-color: #26547c;
   font-family: "Arial", sans-serif;
-  font-size: 30px;
+  font-size: 40px;
 }
 
 body {
@@ -64,15 +64,15 @@ body {
 button {
   min-height: 40px;
   min-width: 48px;
-  flex: 1 1 25%;
+  flex: 1 1 calc(25% - 1px);
   border: none;
   text-decoration: none;
   background-color: #606060;
-  font-size: 16px;
+  font-size: 18px;
   color: #f0f8ff;
 }
-button:hover {
-  background-color: cadetblue;
+button:active {
+  background-color: darkgray;
 }
 button:disabled {
   cursor: not-allowed;
@@ -81,26 +81,20 @@ button:disabled {
 button:disabled, button:disabled:hover {
   background-color: #434343;
 }
-button.function {
-  background-color: #424448;
-}
-button.function:hover {
-  background-color: darkgray;
-}
-button.function:disabled, button.function:disabled:hover {
-  background-color: #2e3032;
-}
 button.operator {
   background-color: #fe9f09;
 }
-button.operator:disabled, button.operator:disabled:hover {
+button.operator:disabled, button.operator:disabled:hover, button.operator:active {
   background-color: #985f05;
 }
-button.operator:hover {
-  background-color: #fe6b09;
+button.function, button.function.operator, button.function.toggle {
+  background-color: #424448;
+}
+button.function:disabled, button.function:disabled:hover, button.function.operator:disabled, button.function.operator:disabled:hover, button.function.toggle:disabled, button.function.toggle:disabled:hover {
+  background-color: #2e3032;
 }
 button.zero {
-  flex: 2 1 50.5%;
+  flex: 2 1 calc(50% - 1px);
 }
 
 /*# sourceMappingURL=style.css.map */

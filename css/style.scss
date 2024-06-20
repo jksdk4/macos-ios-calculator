@@ -1,13 +1,12 @@
 $bg: #26547c;
 $num-button: #606060;
+$num-button--active: darkgray;
 $num-button--disabled: #434343;
-$num-button--hover: cadetblue;
 $function-button: #424448;
+$function-button--active: #606060;
 $function-button--disabled: #2e3032;
-$function-button--hover: darkgray;
 $operator-button: #fe9f09;
 $operator-button--disabled: #985f05;
-$operator-button--hover: #fe6b09;
 $radius: 10px;
 $font: 'Arial', sans-serif;
 $font-color: #f0f8ff;
@@ -16,7 +15,7 @@ body, html {
   height: 100%;
   background-color: $bg;
   font-family: $font;
-  font-size: 30px;
+  font-size: 40px;
 }
 
 body {
@@ -40,6 +39,8 @@ body {
 .calculator {
   flex: 1;
   min-width: 195px;
+  // border-radius: $radius;
+  // border: 1px solid rgba(0, 0, 0, 0.45);   // i can see the border, but it doesn't apply to the buttons. hmm
 }
 
 .basic, .calculator .keys {
@@ -78,15 +79,15 @@ body {
 button {
   min-height: 40px;
   min-width: 48px;
-  flex: 1 1 25%;
+  flex: 1 1 calc(25% - 1px);
   border: none;
   text-decoration: none;
   background-color: $num-button;
-  font-size: 16px;
+  font-size: 18px;
   color: $font-color;
 
-  &:hover {
-    background-color: $num-button--hover;
+  &:active {
+    background-color: $num-button--active;
   }
   
   &:disabled {
@@ -98,31 +99,23 @@ button {
     background-color: $num-button--disabled;
   }
 
-  &.function {
-    background-color: $function-button;
+  &.operator {
+    background-color: $operator-button;
 
-    &:hover {
-      background-color: $function-button--hover;
+    &:disabled, &:disabled:hover, &:active {
+      background-color: $operator-button--disabled;
     }
+  }
+
+  &.function, &.function.operator, &.function.toggle {
+    background-color: $function-button;
 
     &:disabled, &:disabled:hover {
       background-color: $function-button--disabled;
     }
   }
 
-  &.operator {
-    background-color: $operator-button;
-
-    &:disabled, &:disabled:hover {
-      background-color: $operator-button--disabled;
-    }
-
-    &:hover {
-      background-color: $operator-button--hover;
-    }
-  }
-
   &.zero {
-    flex: 2 1 50.5%;
+    flex: 2 1 calc(50% - 1px);
   }
 }
