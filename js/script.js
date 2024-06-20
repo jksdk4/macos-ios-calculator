@@ -20,13 +20,18 @@ function resetDisplayTextSize() {
 }
 
 function changeDisplayVal(numString) {
+  let disabled = (el) => el.hasAttribute("disabled");
+  const operatorsArray = Array.from(operators);   // HTMLCollections and NodeLists don't like ES6 methods I guess
+  if (operatorsArray.some(disabled)) {
+    enableButtons();
+  }
+
   if (result.innerHTML === '0' || afterOperation) {
     resetDisplayTextSize();   // resets input size after hitting an operand and upon the second input being entered
-
-    result.innerHTML = '';    // TODO: hmm i dunno about making it an empty string. but maybe it's fine
+    result.innerHTML = '';
     afterOperation = false;
   }
-  // prevent having more than one decimal point
+
   if (numString === '.' && result.innerHTML.indexOf('.') > -1) {
     numString = '';
   }
@@ -93,7 +98,6 @@ function disableButtons() {
   document.getElementById("decimal").setAttribute("disabled", "");
 }
 
-// TODO: allow input to have more than one digit when clicking num button to restore.
 function enableButtons() {
   afterOperation = true;
 
@@ -222,10 +226,10 @@ for (let i = 0; i < functions.length; i++) {
   if (functions[i].classList.contains("operator")) continue;    // skip sci calc binary functions like x^y
   functions[i].addEventListener("click", () => {
     if (functions[i].classList.contains("toggle")) {
-      toggle(functions[i]);   // i'll add this function later. for 2nd, rad/deg.
+      toggle(functions[i]);         // i'll add this function later. for 2nd, rad/deg.
     } else {
       evaluate(functions[i]);
-      afterOperation = false;   // allows second unary input after operator use
+      afterOperation = false;       // allows second unary input after operator use
     }
   });
 }
